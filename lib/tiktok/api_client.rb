@@ -61,8 +61,11 @@ module Tiktok
     # @param log_requests - Set to `true` if you want to print the request logs to console
     def self.instance(log_requests: false)
       rails_env = ENV['RAILS_ENV'].downcase
+      # In Social Data the `RAILS_ENV` is set to "staging" in our staging instances.
+      # In PPsuite the `API_SUBDOMAIN` will start with "api-staging"
+      is_staging_environment = rails_env == 'staging' || ENV['API_SUBDOMAIN'].start_with?('api-staging')
 
-      if rails_env == 'test' || (!ENV['RAILS_ENV'].nil? && ENV['RAILS_ENV'] == 'staging') # for test and staging environments
+      if rails_env == 'test' || is_staging_environment # for test and staging environments
         test(log_requests: log_requests)
       elsif rails_env == 'development'
         local(log_requests: log_requests)
